@@ -91,7 +91,18 @@ def symptoms_node(state: PlantState) -> dict:
                 grouped["stress"] = []
             grouped["stress"].append(label)
     
-    return {"symptoms_grouped": grouped}
+    # Add reasoning trace
+    if grouped:
+        categories = list(grouped.keys())
+        symptom_count = sum(len(v) for v in grouped.values())
+        trace = f"Symptoms: Grouped {symptom_count} symptom(s) into {len(categories)} categories: {', '.join(categories)}."
+    else:
+        trace = "Symptoms: No symptoms detected."
+    
+    return {
+        "symptoms_grouped": grouped,
+        "reasoning_trace": state.reasoning_trace + [trace]
+    }
 
 
 def get_symptom_display_name(label: str) -> str:

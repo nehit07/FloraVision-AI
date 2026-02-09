@@ -111,9 +111,13 @@ def safety_node(state: PlantState) -> dict:
     dont_do = _generate_dont_do(state)
     pro_tip = _generate_pro_tip(state)
     
+    # Add reasoning trace
+    trace = f"Safety: Added {len(dont_do)} warnings and 1 pro tip."
+    
     return {
         "dont_do": dont_do,
-        "pro_tip": pro_tip
+        "pro_tip": pro_tip,
+        "reasoning_trace": state.reasoning_trace + [trace]
     }
 
 

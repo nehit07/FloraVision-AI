@@ -68,14 +68,21 @@ def identification_node(state: PlantState) -> dict:
     # Rule 1: Check confidence threshold
     if confidence < CONFIDENCE_THRESHOLD:
         updates["plant_name"] = "unknown"
+        trace = f"Identification: Low confidence ({confidence:.0%}), defaulting to unknown."
+        updates["reasoning_trace"] = state.reasoning_trace + [trace]
         return updates
     
     # Rule 2: Check if plant is in our knowledge base
     if plant_name not in PLANTS_DATA:
         updates["plant_name"] = "unknown"
+        trace = f"Identification: '{plant_name}' not in knowledge base, defaulting to unknown."
+        updates["reasoning_trace"] = state.reasoning_trace + [trace]
         return updates
     
     # Plant is valid and confident - normalize the name
     updates["plant_name"] = plant_name
+    trace = f"Identification: Confirmed '{plant_name}' with {confidence:.0%} confidence."
+    updates["reasoning_trace"] = state.reasoning_trace + [trace]
     
     return updates
+

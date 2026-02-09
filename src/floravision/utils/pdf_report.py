@@ -54,26 +54,22 @@ def _build_html_report(state: PlantState) -> str:
         plant_name = "Unknown Plant"
     
     # Health status
+    # Health status
     if state.is_healthy:
         health_status = "Excellent Health"
         health_color = "#22c55e"
-        health_emoji = "🟢"
     elif state.severity == "Mild":
         health_status = "Minor Issues Detected"
         health_color = "#eab308"
-        health_emoji = "🟡"
     elif state.severity == "Moderate":
         health_status = "Attention Needed"
         health_color = "#f97316"
-        health_emoji = "🟠"
     elif state.severity == "Critical":
         health_status = "Urgent Care Required"
         health_color = "#ef4444"
-        health_emoji = "🔴"
     else:
         health_status = "Under Observation"
         health_color = "#6b7280"
-        health_emoji = "⚪"
     
     # Format symptoms
     if state.yolo_detections:
@@ -84,7 +80,7 @@ def _build_html_report(state: PlantState) -> str:
             symptoms_html += f'<li><strong>{display_name}</strong> ({conf_pct}% confidence)</li>'
         symptoms_html += "</ul>"
     else:
-        symptoms_html = '<p class="healthy-text">✅ No visible symptoms detected - plant appears healthy!</p>'
+        symptoms_html = '<p class="healthy-text">No visible symptoms detected - plant appears healthy!</p>'
     
     # Format causes
     if state.causes:
@@ -109,11 +105,8 @@ def _build_html_report(state: PlantState) -> str:
     # Format warnings
     warnings_html = "<ul class='warning-list'>"
     for item in state.dont_do:
-        warnings_html += f"<li>❌ {item}</li>"
+        warnings_html += f"<li>{item}</li>"
     warnings_html += "</ul>"
-    
-    # Season emoji
-    season_emoji = {"spring": "🌸", "summer": "☀️", "autumn": "🍂", "winter": "❄️"}.get(state.season, "🌤️")
     
     # Generate timestamp
     timestamp = datetime.now().strftime("%B %d, %Y at %I:%M %p")
@@ -145,13 +138,8 @@ def _build_html_report(state: PlantState) -> str:
                 margin-bottom: 15px;
             }}
             
-            .logo-icon {{
-                font-size: 36pt;
-                vertical-align: middle;
-            }}
-            
             .logo-title {{
-                font-size: 22pt;
+                font-size: 24pt;
                 color: #166534;
                 font-weight: bold;
             }}
@@ -177,11 +165,14 @@ def _build_html_report(state: PlantState) -> str:
             .status-banner h2 {{
                 font-size: 14pt;
                 margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }}
             
             .status-banner .patient {{
                 font-size: 11pt;
                 margin: 3px 0 0 0;
+                opacity: 0.9;
             }}
             
             .section {{
@@ -197,30 +188,19 @@ def _build_html_report(state: PlantState) -> str:
                 margin-bottom: 8px;
             }}
             
-            .section p {{
-                margin-bottom: 6px;
-            }}
-            
-            .section ul, .section ol {{
-                margin-left: 20px;
-                margin-bottom: 8px;
-            }}
-            
-            .section li {{
-                margin-bottom: 4px;
-            }}
-            
             .summary-box {{
                 background: #f0fdf4;
-                padding: 12px;
+                padding: 15px;
                 border-left: 4px solid #22c55e;
                 margin-bottom: 15px;
             }}
             
             .prognosis {{
                 background: white;
-                padding: 6px 10px;
-                margin-top: 8px;
+                padding: 8px 12px;
+                margin-top: 10px;
+                border: 1px solid #d1d5db;
+                border-radius: 4px;
             }}
             
             .highlight-green {{ color: #166534; font-weight: bold; }}
@@ -241,67 +221,94 @@ def _build_html_report(state: PlantState) -> str:
             .treatment-table td {{
                 width: 50%;
                 vertical-align: top;
-                padding: 8px;
+                padding-right: 10px;
             }}
             
             .immediate-box {{
                 background: #fef3c7;
                 border: 1px solid #f59e0b;
-                padding: 10px;
+                padding: 12px;
+                border-radius: 6px;
+                height: 100%;
             }}
             
             .ongoing-box {{
                 background: #dbeafe;
                 border: 1px solid #3b82f6;
-                padding: 10px;
+                padding: 12px;
+                border-radius: 6px;
+                height: 100%;
             }}
             
             .treatment-title {{
                 font-size: 11pt;
                 font-weight: bold;
-                margin-bottom: 3px;
+                margin-bottom: 2px;
+                color: #1f2937;
             }}
             
             .treatment-subtitle {{
                 font-size: 9pt;
                 color: #6b7280;
-                margin-bottom: 6px;
+                margin-bottom: 8px;
             }}
             
             .warnings-box {{
                 background: #fef2f2;
-                padding: 10px;
+                padding: 12px;
                 border-left: 4px solid #ef4444;
                 margin-bottom: 15px;
+                border-radius: 0 6px 6px 0;
             }}
             
-            .warning-item {{
+            .warning-list {{
+                list-style-type: none;
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+            }}
+            
+            .warning-list li {{
                 color: #991b1b;
+                margin-bottom: 4px;
+                padding-left: 15px;
+                position: relative;
+            }}
+            
+            .warning-list li:before {{
+                content: "!";
+                position: absolute;
+                left: 0;
+                font-weight: bold;
             }}
             
             .seasonal-box {{
                 background: #f0f9ff;
-                padding: 10px;
+                padding: 12px;
                 margin-bottom: 15px;
+                border-radius: 6px;
+                border: 1px solid #bae6fd;
             }}
             
             .tip-box {{
                 background: #fefce8;
-                padding: 10px 12px;
+                padding: 12px;
                 border-left: 4px solid #eab308;
                 font-style: italic;
                 margin-bottom: 15px;
+                border-radius: 0 6px 6px 0;
             }}
             
             .followup-box {{
                 background: #f3f4f6;
-                padding: 10px;
+                padding: 12px;
                 margin-bottom: 15px;
+                border-radius: 6px;
+                border: 1px solid #d1d5db;
             }}
             
             .footer {{
-                margin-top: 20px;
-                padding-top: 12px;
+                margin-top: 25px;
+                padding-top: 15px;
                 border-top: 2px solid #22c55e;
                 text-align: center;
                 font-size: 9pt;
@@ -311,6 +318,7 @@ def _build_html_report(state: PlantState) -> str:
             .disclaimer {{
                 font-size: 8pt;
                 margin-top: 4px;
+                font-style: italic;
             }}
         </style>
     </head>
@@ -319,57 +327,56 @@ def _build_html_report(state: PlantState) -> str:
         <table class="header-table">
             <tr>
                 <td>
-                    <span class="logo-icon">🌿</span>
                     <span class="logo-title">FloraVision AI</span><br/>
                     <span class="tagline">Plant Health Diagnosis Report</span>
                 </td>
                 <td class="report-meta">
                     <strong>Date:</strong> {timestamp}<br/>
-                    <strong>Confidence:</strong> {state.confidence or 'Medium'}
+                    <strong>Confidence:</strong> {state.diagnosis_confidence or 'Medium'}
                 </td>
             </tr>
         </table>
         
         <!-- Health Status Banner -->
         <div class="status-banner" style="background-color: {health_color};">
-            <h2>{health_emoji} {health_status}</h2>
+            <h2>{health_status}</h2>
             <p class="patient">Patient: {plant_name}</p>
         </div>
         
-        <!-- Doctor's Summary -->
+        <!-- Diagnosis Summary -->
         <div class="summary-box">
-            <h3>🩺 Diagnosis Summary</h3>
+            <h3>Diagnosis Summary</h3>
             {_get_doctor_summary_html(state, plant_name)}
         </div>
         
         <!-- Detected Symptoms -->
         <div class="section">
-            <h3>🔬 Detected Symptoms</h3>
+            <h3>Detected Symptoms</h3>
             {symptoms_html}
         </div>
         
         <!-- Likely Causes -->
         <div class="section">
-            <h3>🔍 Likely Causes</h3>
+            <h3>Likely Causes</h3>
             {causes_html}
         </div>
         
         <!-- Treatment Plan -->
         <div class="section">
-            <h3>📋 Treatment Plan</h3>
+            <h3>Treatment Plan</h3>
             <table class="treatment-table">
                 <tr>
                     <td>
                         <div class="immediate-box">
-                            <p class="treatment-title">🚨 Immediate Actions</p>
-                            <p class="treatment-subtitle">Do this in the next 24-48 hours</p>
+                            <p class="treatment-title">Immediate Actions</p>
+                            <p class="treatment-subtitle">Complete within 24-48 hours</p>
                             {immediate_html}
                         </div>
                     </td>
                     <td>
                         <div class="ongoing-box">
-                            <p class="treatment-title">📅 Ongoing Care</p>
-                            <p class="treatment-subtitle">Maintain these practices</p>
+                            <p class="treatment-title">Ongoing Care</p>
+                            <p class="treatment-subtitle">Consistent maintenance steps</p>
                             {ongoing_html}
                         </div>
                     </td>
@@ -377,27 +384,27 @@ def _build_html_report(state: PlantState) -> str:
             </table>
         </div>
         
-        <!-- What Not To Do -->
+        <!-- Common Mistakes -->
         <div class="warnings-box">
-            <h3>⚠️ Common Mistakes to Avoid</h3>
+            <h3>Common Mistakes to Avoid</h3>
             {warnings_html}
         </div>
         
         <!-- Seasonal Insight -->
         <div class="seasonal-box">
-            <h3>{season_emoji} Seasonal Care ({state.season.title()})</h3>
+            <h3>Seasonal Care ({state.season.title()})</h3>
             <p>{state.seasonal_insight or 'Consider current season when caring for your plant.'}</p>
         </div>
         
         <!-- Expert Tip -->
         <div class="tip-box">
-            <h3>💡 Expert Tip</h3>
+            <h3>Expert Tip</h3>
             <p>{state.pro_tip or 'Every plant is unique - observe and learn from yours!'}</p>
         </div>
         
         <!-- Follow-Up -->
         <div class="followup-box">
-            <h3>📆 Follow-Up Recommendation</h3>
+            <h3>Follow-Up Recommendation</h3>
             <p>{_get_followup_text(state)}</p>
         </div>
         
@@ -420,7 +427,7 @@ def _get_doctor_summary_html(state: PlantState, plant_name: str) -> str:
         <p>Your <strong>{plant_name}</strong> is in <span class="highlight-green">excellent condition</span>! 
         The foliage appears vibrant, and no visible signs of disease, pests, or nutrient deficiencies were detected. 
         This plant is thriving in its current environment.</p>
-        <p class="prognosis"><strong>Prognosis:</strong> Continue current care routine. Your plant is well-maintained. 🌿</p>
+        <p class="prognosis"><strong>Prognosis:</strong> Continue current care routine. Your plant is well-maintained.</p>
         """
     
     elif state.severity == "Mild":
@@ -429,7 +436,7 @@ def _get_doctor_summary_html(state: PlantState, plant_name: str) -> str:
         return f"""
         <p>Your <strong>{plant_name}</strong> is showing <span class="highlight-yellow">early signs of {symptom_text} stress</span>. 
         These symptoms are minor and easily treatable with prompt attention. The overall health of the plant remains stable.</p>
-        <p class="prognosis"><strong>Prognosis:</strong> Full recovery expected within 1-2 weeks with proper care. 💪</p>
+        <p class="prognosis"><strong>Prognosis:</strong> Full recovery expected within 1-2 weeks with proper care.</p>
         """
     
     elif state.severity == "Moderate":
@@ -437,7 +444,7 @@ def _get_doctor_summary_html(state: PlantState, plant_name: str) -> str:
         <p>Your <strong>{plant_name}</strong> requires <span class="highlight-orange">attention</span>. 
         Multiple stress indicators suggest the plant is struggling with its current conditions. 
         Without intervention, the condition may deteriorate.</p>
-        <p class="prognosis"><strong>Prognosis:</strong> Recovery expected within 2-4 weeks with consistent treatment. ⚡</p>
+        <p class="prognosis"><strong>Prognosis:</strong> Recovery expected within 2-4 weeks with consistent treatment.</p>
         """
     
     elif state.severity == "Critical":
@@ -445,7 +452,7 @@ def _get_doctor_summary_html(state: PlantState, plant_name: str) -> str:
         <p>Your <strong>{plant_name}</strong> is in <span class="highlight-red">critical condition</span> and requires 
         <strong>immediate intervention</strong>. Serious symptoms detected that could lead to plant loss if untreated. 
         Act quickly but don't panic - many plants recover with proper care.</p>
-        <p class="prognosis"><strong>Prognosis:</strong> Guarded - recovery possible with aggressive treatment. Monitor daily. 🚨</p>
+        <p class="prognosis"><strong>Prognosis:</strong> Guarded - recovery possible with aggressive treatment. Monitor daily.</p>
         """
     
     return f"<p>Your {plant_name} is currently under observation. Follow the care recommendations below.</p>"
@@ -456,7 +463,7 @@ def _get_followup_text(state: PlantState) -> str:
     if state.is_healthy:
         return "Your plant is healthy! Recommended next scan: 2-4 weeks, or if you notice any changes in leaf color, texture, or growth patterns."
     elif state.severity == "Critical":
-        return "⚠️ Critical condition requires close monitoring. Scan again in 3-5 days to track recovery. Document any changes with photos. If condition worsens, consult a local nursery expert."
+        return "Critical condition requires close monitoring. Scan again in 3-5 days to track recovery. Document any changes with photos. If condition worsens, consult a local nursery expert."
     elif state.severity == "Moderate":
         return "Recommended next scan: 1 week after starting treatment to monitor progress. Look for improvement in leaf color and new growth."
     else:

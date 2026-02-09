@@ -61,29 +61,19 @@ class PlantIdentifier:
             mock: If True, use mock identification for demo
         """
         self.mock = mock
-        self.model = None
+        self.llm = None
         
         # Load known plants from knowledge base
         with open(PLANTS_PATH) as f:
             self.plants_data = json.load(f)
         self.known_plants = list(self.plants_data.keys())
         
-        # Try to initialize Gemini
+        # Try to initialize LLM abstraction
         if not mock:
-            try:
-                from langchain_google_genai import ChatGoogleGenerativeAI
-                api_key = os.getenv("GOOGLE_API_KEY")
-                if api_key:
-                    self.model = ChatGoogleGenerativeAI(
-                        model="gemini-2.5-flash",
-                        google_api_key=api_key
-                    )
-                    self.mock = False
-                else:
-                    print("Warning: GOOGLE_API_KEY not found. Using mock mode.")
-                    self.mock = True
-            except Exception as e:
-                print(f"Warning: Could not initialize Gemini: {e}")
+            from ..llm import get_llm
+            self.llm = get_llm()
+            if not self.llm.is_available:
+                print("Warning: LLM not available. Using mock mode.")
                 self.mock = True
     
     def identify(self, image_bytes: bytes) -> Tuple[str, float]:
@@ -122,14 +112,9 @@ class PlantIdentifier:
     
     def _real_identify(self, image_bytes: bytes) -> Tuple[str, float]:
         """
-        Real identification using Gemini Vision.
+        Real identification using LLM abstraction.
         """
         try:
-            from langchain_core.messages import HumanMessage
-            
-            # Encode image to base64
-            image_b64 = base64.b64encode(image_bytes).decode()
-            
             # Create prompt for plant identification
             prompt = f"""Identify this plant. 
 
@@ -145,22 +130,14 @@ CONFIDENCE: 0.3
 
 Only respond with the two lines above, nothing else."""
 
-            # Create message with image
-            message = HumanMessage(
-                content=[
-                    {"type": "text", "text": prompt},
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/jpeg;base64,{image_b64}"}
-                    }
-                ]
-            )
+            # Use LLM with image support
+            response_text = self.llm.generate_with_image(prompt, image_bytes)
             
-            # Get response
-            response = self.model.invoke([message])
+            if not response_text:
+                return "unknown", 0.3
             
             # Parse response
-            return self._parse_response(response.content)
+            return self._parse_response(response_text)
             
         except Exception as e:
             print(f"Plant identification error: {e}")

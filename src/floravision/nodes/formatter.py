@@ -37,7 +37,7 @@ OUTPUT FORMAT (as per spec):
 
 import json
 from pathlib import Path
-from ..state import PlantState
+from ..state import PlantState, KNOWLEDGE_VERSION
 from .symptoms import get_symptom_display_name
 
 
@@ -55,22 +55,92 @@ def formatter_node(state: PlantState) -> dict:
     Final node that assembles all information into a 
     beautifully formatted markdown response.
     
+    Note: For healthy plants (via conditional flow), this node may be reached
+    without passing through causes/seasonal/care/safety nodes. In such cases,
+    we provide sensible defaults.
+    
     Args:
-        state: Complete PlantState with all fields populated
+        state: PlantState (may have empty optional fields for healthy path)
         
     Returns:
-        dict with final_response and rescan_suggested
+        dict with final_response, rescan_suggested, and any populated defaults
     """
+    # For healthy plants that skipped the care/safety nodes, provide defaults
+    effective_state = _ensure_healthy_defaults(state)
+    
     # Check if rescan should be suggested
-    rescan_suggested = _should_suggest_rescan(state)
+    rescan_suggested = _should_suggest_rescan(effective_state)
     
     # Build the response
-    response = _build_response(state, rescan_suggested)
+    response = _build_response(effective_state, rescan_suggested)
     
-    return {
+    # Add reasoning trace
+    trace = "Formatter: Assembled final response."
+    
+    # Build result with core outputs
+    result = {
         "final_response": response,
-        "rescan_suggested": rescan_suggested
+        "rescan_suggested": rescan_suggested,
+        "reasoning_trace": state.reasoning_trace + [trace]
     }
+    
+    # For healthy plants that skipped nodes, include the computed defaults
+    # so downstream consumers (tests, UI) can access them
+    if state.is_healthy:
+        if not state.care_immediate:
+            result["care_immediate"] = effective_state.care_immediate
+        if not state.care_ongoing:
+            result["care_ongoing"] = effective_state.care_ongoing
+        if not state.dont_do:
+            result["dont_do"] = effective_state.dont_do
+        if not state.pro_tip:
+            result["pro_tip"] = effective_state.pro_tip
+        if not state.seasonal_insight:
+            result["seasonal_insight"] = effective_state.seasonal_insight
+    
+    return result
+
+
+def _ensure_healthy_defaults(state: PlantState) -> PlantState:
+    """
+    Ensure healthy plants have sensible default values for fields
+    that may not be populated when skipping care/safety nodes.
+    """
+    if not state.is_healthy:
+        return state
+    
+    # Create a dict with defaults for missing fields
+    updates = {}
+    
+    if not state.care_immediate:
+        updates["care_immediate"] = [
+            "Your plant looks great! No immediate action needed.",
+            "Take a moment to appreciate your healthy plant! 🌿"
+        ]
+    
+    if not state.care_ongoing:
+        updates["care_ongoing"] = [
+            "Continue your current care routine",
+            "Check for pests weekly during your watering routine"
+        ]
+    
+    if not state.dont_do:
+        updates["dont_do"] = [
+            "Don't overwater just because you want to 'help' - let soil dry between waterings",
+            "Don't move a thriving plant - if it's happy, leave it be"
+        ]
+    
+    if not state.pro_tip:
+        updates["pro_tip"] = "Healthy plants can be propagated! Consider taking cuttings to share with friends. 🌱"
+    
+    if not state.seasonal_insight:
+        updates["seasonal_insight"] = f"Keep maintaining your plant through {state.season}."
+    
+    if not updates:
+        return state
+    
+    # Return a new state with defaults applied
+    return state.model_copy(update=updates)
 
 
 def _should_suggest_rescan(state: PlantState) -> bool:
@@ -83,7 +153,7 @@ def _should_suggest_rescan(state: PlantState) -> bool:
     - Conflicting symptoms detected
     """
     # Low confidence
-    if state.confidence == "Low":
+    if state.diagnosis_confidence == "Low":
         return True
     
     # Very few detections with low individual confidence
@@ -142,12 +212,12 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
         symptoms_text = "✅ No visible symptoms detected - your plant appears healthy!"
     
     severity_display = state.severity if state.severity else "None (Healthy)"
-    confidence_explanation = _get_confidence_explanation(state.confidence)
+    confidence_explanation = _get_confidence_explanation(state.diagnosis_confidence)
     
     diagnosis = f"""## 🔬 Detailed Diagnosis
 
 **Severity Level:** {severity_display}
-**Diagnostic Confidence:** {state.confidence or 'Medium'} - {confidence_explanation}
+**Diagnostic Confidence:** {state.diagnosis_confidence or 'Medium'} - {confidence_explanation}
 
 ### Detected Symptoms
 {symptoms_text}"""
@@ -167,11 +237,11 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
     if state.plant_name != "unknown":
         plant_profile = f"""## 🌱 About Your {plant_display.split('(')[0].strip()}
 
-**Scientific Name:** *{plant_info.get('scientific_name', 'Unknown')}*
-**Light Needs:** {plant_info.get('light', 'Moderate indirect light')}
-**Water Needs:** {plant_info.get('water_frequency', 'When top inch of soil is dry')}
-**Common Issues:** {', '.join(plant_info.get('common_issues', ['None documented'])[:3])}
-**Toxicity:** {plant_info.get('toxicity', 'Check before exposing to pets/children')}"""
+- **Scientific Name:** *{plant_info.get('scientific_name', 'Unknown')}*
+- **Light Needs:** {plant_info.get('light', 'Moderate indirect light')}
+- **Water Needs:** {plant_info.get('water_frequency', 'When top inch of soil is dry')}
+- **Common Issues:** {', '.join(plant_info.get('common_issues', ['None documented'])[:3])}
+- **Toxicity:** {plant_info.get('toxicity', 'Check before exposing to pets/children')}"""
         sections.append(plant_profile)
     
     # ═══════════════════════════════════════════════════════════════
@@ -199,7 +269,7 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
     dont = "## ⚠️ Common Mistakes to Avoid\n\n"
     dont += "*These actions can worsen your plant's condition:*\n\n"
     for item in state.dont_do:
-        dont += f"❌ {item}\n"
+        dont += f"- ❌ {item}\n"
     
     sections.append(dont.strip())
     
@@ -236,8 +306,11 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
         rescan = """> 📸 **For better accuracy**, try scanning the leaf closer under natural light."""
         sections.append(rescan)
     
+    # Add knowledge version footer
+    version_footer = f"\n\n---\n\n*Diagnosis powered by FloraVision AI • Knowledge Base v{KNOWLEDGE_VERSION}*"
+    
     # Join all sections with dividers
-    return "\n\n---\n\n".join(sections)
+    return "\n\n---\n\n".join(sections) + version_footer
 
 
 def _get_health_status_text(state: PlantState) -> str:

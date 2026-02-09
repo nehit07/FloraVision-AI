@@ -62,36 +62,42 @@ def causes_node(state: PlantState) -> dict:
     """
     # If plant is healthy, no causes needed
     if state.is_healthy:
-        return {"causes": []}
+        trace = "Causes: Plant is healthy, no cause analysis needed."
+        return {
+            "causes": [],
+            "reasoning_trace": state.reasoning_trace + [trace]
+        }
     
     # Try LLM-based cause analysis
     try:
         causes = _llm_cause_analysis(state)
         if causes:
-            return {"causes": causes}
+            trace = f"Causes: LLM identified {len(causes)} cause(s)."
+            return {
+                "causes": causes,
+                "reasoning_trace": state.reasoning_trace + [trace]
+            }
     except Exception as e:
         print(f"LLM cause analysis failed: {e}")
     
     # Fallback to knowledge base
     causes = _knowledge_base_causes(state)
-    return {"causes": causes}
+    trace = f"Causes: Knowledge base provided {len(causes)} cause(s) (LLM fallback)."
+    return {
+        "causes": causes,
+        "reasoning_trace": state.reasoning_trace + [trace]
+    }
 
 
 def _llm_cause_analysis(state: PlantState) -> List[str]:
     """
-    Use Gemini to analyze causes (LLM-powered reasoning).
+    Use abstracted LLM to analyze causes.
     """
-    api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
+    from ..llm import get_llm
+    llm = get_llm()
+    
+    if not llm.is_available:
         return []
-    
-    from langchain_google_genai import ChatGoogleGenerativeAI
-    from langchain_core.messages import HumanMessage
-    
-    model = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        google_api_key=api_key
-    )
     
     # Build symptom summary
     symptom_list = []
@@ -118,11 +124,13 @@ Example:
 2. Low humidity is drying out the leaf tips.
 """
     
-    response = model.invoke([HumanMessage(content=prompt)])
+    response_text = llm.generate(prompt)
+    if not response_text:
+        return []
     
     # Parse numbered list
     causes = []
-    for line in response.content.strip().split('\n'):
+    for line in response_text.strip().split('\n'):
         line = line.strip()
         if line and line[0].isdigit():
             # Remove numbering

@@ -61,26 +61,7 @@ from .detection.plant_id import identify_plant
 
 
 def create_graph() -> StateGraph:
-    """
-    Create the LangGraph reasoning pipeline.
-    
-    This builds the graph but does NOT compile it yet.
-    Call .compile() on the result to get a runnable graph.
-    
-    Returns:
-        StateGraph with all 8 nodes wired together
-    
-    Example:
-        graph = create_graph()
-        compiled = graph.compile()
-        result = compiled.invoke(initial_state)
-    """
-    # Initialize StateGraph with our state schema
     graph = StateGraph(PlantState)
-    
-    # ═══════════════════════════════════════════════════════════════
-    # ADD ALL 8 NODES
-    # ═══════════════════════════════════════════════════════════════
     
     graph.add_node("identification", identification_node)   # Node 1
     graph.add_node("symptoms", symptoms_node)               # Node 2
@@ -91,17 +72,25 @@ def create_graph() -> StateGraph:
     graph.add_node("safety", safety_node)                   # Node 7
     graph.add_node("formatter", formatter_node)             # Node 8
     
-    # ═══════════════════════════════════════════════════════════════
-    # DEFINE EDGES (LINEAR FLOW)
-    # ═══════════════════════════════════════════════════════════════
-    
     # Set entry point
     graph.set_entry_point("identification")
     
-    # Wire nodes in sequence
+    # Normal flow: identification → symptoms → severity
     graph.add_edge("identification", "symptoms")
     graph.add_edge("symptoms", "severity")
-    graph.add_edge("severity", "causes")
+    
+    # CONDITIONAL: After severity, route based on health status
+    # Healthy plants skip cause analysis, go directly to formatter
+    graph.add_conditional_edges(
+        "severity",
+        _route_after_severity,
+        {
+            "healthy": "formatter",    # Skip causes/care/safety for healthy plants
+            "needs_care": "causes"     # Continue normal flow for symptomatic plants
+        }
+    )
+    
+    # Normal flow continuation for symptomatic plants
     graph.add_edge("causes", "seasonal")
     graph.add_edge("seasonal", "care_plan")
     graph.add_edge("care_plan", "safety")
@@ -113,13 +102,14 @@ def create_graph() -> StateGraph:
     return graph
 
 
+def _route_after_severity(state: PlantState) -> str:
+    if state.is_healthy:
+        return "healthy"
+    return "needs_care"
+
+
+
 def get_compiled_graph():
-    """
-    Get a compiled, ready-to-run graph.
-    
-    Returns:
-        Compiled LangGraph ready for .invoke()
-    """
     return create_graph().compile()
 
 
@@ -128,38 +118,9 @@ def run_diagnosis(
     season: str = "unknown",
     mock: bool = True
 ) -> str:
-    """
-    Complete diagnosis pipeline - from image to formatted response.
-    
-    This is the main entry point for running a diagnosis.
-    It handles:
-    1. YOLO detection (populates yolo_detections)
-    2. Plant identification (populates plant_name, plant_id_confidence)
-    3. Running the 8-node reasoning pipeline
-    4. Returning the formatted response
-    
-    Args:
-        image_bytes: Raw image bytes from camera/upload
-        season: Current season (spring/summer/autumn/winter)
-        mock: Use mock mode for detection (demo purposes)
-        
-    Returns:
-        Formatted markdown diagnosis string
-        
-    Example:
-        with open("plant.jpg", "rb") as f:
-            image = f.read()
-        
-        diagnosis = run_diagnosis(image, season="winter", mock=True)
-        print(diagnosis)
-    """
-    # Step 1: Run YOLO detection
     yolo_detections = detect_symptoms(image_bytes, mock=mock)
-    
-    # Step 2: Identify plant species
     plant_name, plant_confidence = identify_plant(image_bytes, mock=mock)
     
-    # Step 3: Create initial state
     initial_state = PlantState(
         image=image_bytes,
         season=season.lower(),
@@ -168,11 +129,8 @@ def run_diagnosis(
         yolo_detections=yolo_detections
     )
     
-    # Step 4: Run the reasoning pipeline
     compiled_graph = get_compiled_graph()
     final_state = compiled_graph.invoke(initial_state)
-    
-    # Step 5: Return the formatted response
     return final_state["final_response"]
 
 
@@ -181,22 +139,10 @@ def run_diagnosis_full(
     season: str = "unknown",
     mock: bool = True
 ) -> PlantState:
-    """
-    Run diagnosis and return the complete state (for debugging/advanced use).
-    
-    Args:
-        image_bytes: Raw image bytes
-        season: Current season
-        mock: Use mock mode
-        
-    Returns:
-        Complete PlantState with all fields populated
-    """
-    # Run YOLO and plant ID
+
     yolo_detections = detect_symptoms(image_bytes, mock=mock)
     plant_name, plant_confidence = identify_plant(image_bytes, mock=mock)
     
-    # Create and run
     initial_state = PlantState(
         image=image_bytes,
         season=season.lower(),
@@ -206,4 +152,5 @@ def run_diagnosis_full(
     )
     
     compiled_graph = get_compiled_graph()
-    return compiled_graph.invoke(initial_state)
+    result = compiled_graph.invoke(initial_state)
+    return PlantState(**result)

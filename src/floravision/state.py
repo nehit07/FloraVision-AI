@@ -32,6 +32,9 @@ USAGE:
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
+# Knowledge base version for reproducibility
+KNOWLEDGE_VERSION = "1.0.0"
+
 
 class YOLODetection(BaseModel):
     """
@@ -65,86 +68,32 @@ class PlantState(BaseModel):
         5. Final state contains complete diagnosis
     """
     
-    # ═══════════════════════════════════════════════════════════════
-    # INPUT FIELDS (set by app.py before pipeline starts)
-    # ═══════════════════════════════════════════════════════════════
     image: Optional[bytes] = None
-    """Raw image bytes from camera/upload"""
     
     season: str = "unknown"
-    """Current season: spring, summer, autumn, winter"""
-    
-    # ═══════════════════════════════════════════════════════════════
-    # DETECTION FIELDS (set by detection/ modules)
-    # ═══════════════════════════════════════════════════════════════
     plant_name: str = "Unknown"
-    """Identified plant species (set by plant_id.py)"""
-    
     plant_id_confidence: float = 0.0
-    """Confidence of plant identification (0.0 to 1.0)"""
     
-    yolo_detections: List[YOLODetection] = []
-    """List of detected symptoms with confidence (set by yolo_detector.py)"""
-    
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 2: SYMPTOM MAPPING (set by nodes/symptoms.py)
-    # ═══════════════════════════════════════════════════════════════
-    symptoms_grouped: Dict[str, List[str]] = {}
-    """
-    Symptoms organized by category.
-    Example: {"nutrient": ["yellowing"], "fungal": ["brown_spots"]}
-    """
-    
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 3: SEVERITY ASSESSMENT (set by nodes/severity.py)
-    # ═══════════════════════════════════════════════════════════════
+    yolo_detections: List[YOLODetection] = Field(default_factory=list)
+    symptoms_grouped: Dict[str, List[str]] = Field(default_factory=dict)
+
     severity: Optional[str] = None
-    """Severity level: None (healthy), Mild, Moderate, Critical"""
-    
-    confidence: Optional[str] = None
-    """Diagnosis confidence: High, Medium, Low"""
-    
+    diagnosis_confidence: Optional[str] = None
     is_healthy: bool = False
-    """Flag indicating plant has no detected issues"""
-    
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 4: CAUSE ANALYSIS (set by nodes/causes.py)
-    # ═══════════════════════════════════════════════════════════════
-    causes: List[str] = []
-    """Likely causes for detected symptoms (LLM-generated)"""
-    
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 5: SEASONAL CONTEXT (set by nodes/seasonal.py)
-    # ═══════════════════════════════════════════════════════════════
+
+    causes: List[str] = Field(default_factory=list)
     seasonal_insight: Optional[str] = None
-    """Season-specific advice or warning"""
+    care_immediate: List[str] = Field(default_factory=list)
+    care_ongoing: List[str] = Field(default_factory=list)
     
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 6: CARE PLAN (set by nodes/care_plan.py)
-    # ═══════════════════════════════════════════════════════════════
-    care_immediate: List[str] = []
-    """Urgent actions to take right now"""
-    
-    care_ongoing: List[str] = []
-    """Long-term maintenance actions"""
-    
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 7: SAFETY FILTER (set by nodes/safety.py)
-    # ═══════════════════════════════════════════════════════════════
-    dont_do: List[str] = []
-    """Actions to avoid (common mistakes)"""
+    dont_do: List[str] = Field(default_factory=list)
     
     pro_tip: Optional[str] = None
-    """Expert tip specific to this plant/situation"""
     
-    # ═══════════════════════════════════════════════════════════════
-    # NODE 8: RESPONSE FORMATTING (set by nodes/formatter.py)
-    # ═══════════════════════════════════════════════════════════════
     rescan_suggested: bool = False
-    """Flag to suggest user rescan with better conditions"""
     
     final_response: Optional[str] = None
-    """Complete formatted markdown response for display"""
+    reasoning_trace: List[str] = Field(default_factory=list)
 
 
 def calculate_confidence(state: PlantState) -> str:

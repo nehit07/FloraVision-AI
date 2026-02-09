@@ -64,9 +64,13 @@ def care_plan_node(state: PlantState) -> dict:
     """
     immediate, ongoing = _generate_care_plan(state)
     
+    # Add reasoning trace
+    trace = f"Care Plan: Generated {len(immediate)} immediate and {len(ongoing)} ongoing actions."
+    
     return {
         "care_immediate": immediate,
-        "care_ongoing": ongoing
+        "care_ongoing": ongoing,
+        "reasoning_trace": state.reasoning_trace + [trace]
     }
 
 

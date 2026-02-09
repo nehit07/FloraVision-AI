@@ -165,7 +165,7 @@ class TestSeverityNode:
     def test_confidence_calculation(self, critical_state):
         """Confidence should be calculated."""
         result = severity_node(critical_state)
-        assert result["confidence"] in ["High", "Medium", "Low"]
+        assert result["diagnosis_confidence"] in ["High", "Medium", "Low"]
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -248,7 +248,7 @@ class TestFormatterNode:
         """Should produce markdown response."""
         # Populate required fields
         healthy_state.is_healthy = True
-        healthy_state.confidence = "High"
+        healthy_state.diagnosis_confidence = "High"
         healthy_state.care_immediate = ["Keep doing what you're doing"]
         healthy_state.care_ongoing = ["Water weekly"]
         healthy_state.dont_do = ["Don't overwater"]
@@ -269,7 +269,7 @@ class TestFormatterNode:
         """Low confidence should suggest rescan."""
         state = PlantState(
             plant_name="unknown",
-            confidence="Low",
+            diagnosis_confidence="Low",
             yolo_detections=[YOLODetection(label="leaf_yellowing", confidence=0.4)],
             care_immediate=["Check soil"],
             care_ongoing=["Water weekly"],

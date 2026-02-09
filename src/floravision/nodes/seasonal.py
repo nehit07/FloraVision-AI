@@ -70,7 +70,13 @@ def seasonal_node(state: PlantState) -> dict:
     # Build seasonal insight
     insight = _build_seasonal_insight(state, season, season_info)
     
-    return {"seasonal_insight": insight}
+    # Add reasoning trace
+    trace = f"Seasonal: Applied {season} context adjustments."
+    
+    return {
+        "seasonal_insight": insight,
+        "reasoning_trace": state.reasoning_trace + [trace]
+    }
 
 
 def _build_seasonal_insight(

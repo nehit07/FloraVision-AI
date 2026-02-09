@@ -197,22 +197,19 @@ if image_bytes:
     if analyze_button:
         with st.spinner("🔍 Analyzing your plant... This may take a moment..."):
             try:
-                # Run the diagnosis pipeline (get full state for PDF)
-                result = run_diagnosis_full(
+                # Run the diagnosis pipeline (returns PlantState object)
+                plant_state = run_diagnosis_full(
                     image_bytes=image_bytes,
                     season=season,
                     mock=mock_mode
                 )
-                
-                # Create PlantState object for PDF generation
-                plant_state = PlantState(**result)
                 
                 st.success("✅ Analysis complete!")
                 st.divider()
                 
                 # Display the diagnosis
                 st.markdown("# 🌿 Diagnosis Results")
-                st.markdown(result["final_response"])
+                st.markdown(plant_state.final_response)
                 
                 # Generate PDF report
                 st.divider()
@@ -231,7 +228,7 @@ if image_bytes:
                         st.warning(f"PDF generation failed: {pdf_error}. Offering markdown instead.")
                         st.download_button(
                             label="📥 Download Diagnosis (Markdown)",
-                            data=result["final_response"],
+                            data=plant_state.final_response,
                             file_name=f"floravision_diagnosis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
                             mime="text/markdown"
                         )

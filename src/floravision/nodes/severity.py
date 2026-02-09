@@ -21,8 +21,9 @@ READS FROM STATE:
 
 WRITES TO STATE:
     - severity (None/Mild/Moderate/Critical)
-    - confidence (High/Medium/Low)
+    - diagnosis_confidence (High/Medium/Low)
     - is_healthy (boolean)
+    - reasoning_trace (appends explanation)
 
 SEVERITY RULES (Rule-Based, NOT LLM):
     - total_weight >= 6 OR fungal detected → Critical
@@ -124,7 +125,14 @@ def severity_node(state: PlantState) -> dict:
     # CONFIDENCE CALCULATION
     # ═══════════════════════════════════════════════════════════════
     
-    updates["confidence"] = calculate_confidence(state)
+    updates["diagnosis_confidence"] = calculate_confidence(state)
+    
+    # Add reasoning trace
+    if updates.get("is_healthy"):
+        trace = "Severity: No symptoms detected, plant is healthy."
+    else:
+        trace = f"Severity: {updates['severity']} (weight={total_weight:.1f}, fungal={has_fungal}, disease={has_disease})"
+    updates["reasoning_trace"] = state.reasoning_trace + [trace]
     
     return updates
 

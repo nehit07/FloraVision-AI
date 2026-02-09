@@ -151,6 +151,10 @@ class YOLODetector:
             image = Image.open(io.BytesIO(image_bytes))
             
             # Run YOLO inference
+            if self.model is None:
+                print("Warning: YOLO model is None, falling back to mock detections.")
+                return self._mock_detect(image_bytes)
+                
             results = self.model(image)
             
             for result in results:

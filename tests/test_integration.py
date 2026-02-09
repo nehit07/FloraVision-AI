@@ -56,7 +56,7 @@ class TestPipelineIntegration:
         
         # Verify all outputs are populated
         assert result["final_response"] is not None
-        assert result["confidence"] is not None
+        assert result["diagnosis_confidence"] is not None
         assert result["is_healthy"] is True
         assert len(result["care_immediate"]) > 0
         assert len(result["care_ongoing"]) > 0
