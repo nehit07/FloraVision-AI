@@ -1,0 +1,133 @@
+{
+    "leaf_yellowing": {
+        "category": "nutrient",
+        "display_name": "Leaf Yellowing",
+        "possible_causes": [
+            "Nitrogen deficiency",
+            "Overwatering leading to root issues",
+            "Natural aging of lower leaves"
+        ],
+        "severity_weight": 2,
+        "description": "Leaves turning yellow, often starting from tips or edges"
+    },
+    "brown_spots": {
+        "category": "fungal",
+        "display_name": "Brown Spots",
+        "possible_causes": [
+            "Fungal leaf spot disease",
+            "Bacterial blight",
+            "Sunburn from direct light"
+        ],
+        "severity_weight": 3,
+        "description": "Dark brown or black spots on leaves"
+    },
+    "wilting": {
+        "category": "water",
+        "display_name": "Wilting",
+        "possible_causes": [
+            "Underwatering",
+            "Root rot from overwatering",
+            "Heat stress"
+        ],
+        "severity_weight": 3,
+        "description": "Drooping or limp leaves and stems"
+    },
+    "brown_tips": {
+        "category": "water",
+        "display_name": "Brown Leaf Tips",
+        "possible_causes": [
+            "Low humidity",
+            "Underwatering",
+            "Fertilizer burn"
+        ],
+        "severity_weight": 1,
+        "description": "Tips of leaves turning brown and crispy"
+    },
+    "curling_leaves": {
+        "category": "stress",
+        "display_name": "Curling Leaves",
+        "possible_causes": [
+            "Temperature stress",
+            "Pest infestation",
+            "Overwatering"
+        ],
+        "severity_weight": 2,
+        "description": "Leaves curling inward or downward"
+    },
+    "powdery_mildew": {
+        "category": "fungal",
+        "display_name": "Powdery Mildew",
+        "possible_causes": [
+            "Fungal infection",
+            "Poor air circulation",
+            "High humidity"
+        ],
+        "severity_weight": 4,
+        "description": "White powdery coating on leaves"
+    },
+    "pest_damage": {
+        "category": "pest",
+        "display_name": "Pest Damage",
+        "possible_causes": [
+            "Aphid infestation",
+            "Spider mites",
+            "Mealybugs"
+        ],
+        "severity_weight": 3,
+        "description": "Holes, trails, or sticky residue on leaves"
+    },
+    "root_rot": {
+        "category": "disease",
+        "display_name": "Root Rot",
+        "possible_causes": [
+            "Overwatering",
+            "Poor drainage",
+            "Contaminated soil"
+        ],
+        "severity_weight": 5,
+        "description": "Mushy, brown roots with foul smell"
+    },
+    "leaf_drop": {
+        "category": "stress",
+        "display_name": "Leaf Drop",
+        "possible_causes": [
+            "Environmental shock",
+            "Underwatering",
+            "Temperature changes"
+        ],
+        "severity_weight": 2,
+        "description": "Leaves falling off prematurely"
+    },
+    "stunted_growth": {
+        "category": "nutrient",
+        "display_name": "Stunted Growth",
+        "possible_causes": [
+            "Nutrient deficiency",
+            "Root-bound plant",
+            "Insufficient light"
+        ],
+        "severity_weight": 2,
+        "description": "Plant not growing or producing new leaves"
+    },
+    "pale_leaves": {
+        "category": "light",
+        "display_name": "Pale Leaves",
+        "possible_causes": [
+            "Insufficient light",
+            "Iron deficiency",
+            "Chlorosis"
+        ],
+        "severity_weight": 2,
+        "description": "Leaves losing green color, becoming pale"
+    },
+    "leggy_growth": {
+        "category": "light",
+        "display_name": "Leggy Growth",
+        "possible_causes": [
+            "Insufficient light",
+            "Plant reaching for light source"
+        ],
+        "severity_weight": 1,
+        "description": "Elongated, weak stems with sparse leaves"
+    }
+}

@@ -1,0 +1,185 @@
+{
+    "pothos": {
+        "scientific_name": "Epipremnum aureum",
+        "common_names": [
+            "Pothos",
+            "Devil's Ivy",
+            "Money Plant"
+        ],
+        "light": "Low to bright indirect",
+        "water_frequency": "Weekly, allow soil to dry between waterings",
+        "humidity": "Average to high",
+        "common_issues": [
+            "root_rot",
+            "leaf_yellowing",
+            "brown_tips"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Extremely tolerant of low light",
+            "Prune regularly to encourage bushier growth",
+            "Propagates easily in water"
+        ]
+    },
+    "monstera": {
+        "scientific_name": "Monstera deliciosa",
+        "common_names": [
+            "Swiss Cheese Plant",
+            "Split-leaf Philodendron"
+        ],
+        "light": "Bright indirect",
+        "water_frequency": "Every 1-2 weeks",
+        "humidity": "High",
+        "common_issues": [
+            "brown_tips",
+            "leaf_yellowing",
+            "root_rot"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Fenestrations (holes) develop with maturity and light",
+            "Loves humidity - mist regularly",
+            "Provide a moss pole for climbing"
+        ]
+    },
+    "snake_plant": {
+        "scientific_name": "Sansevieria trifasciata",
+        "common_names": [
+            "Snake Plant",
+            "Mother-in-Law's Tongue"
+        ],
+        "light": "Low to bright indirect",
+        "water_frequency": "Every 2-3 weeks, very drought tolerant",
+        "humidity": "Low to average",
+        "common_issues": [
+            "root_rot",
+            "soft_leaves",
+            "brown_tips"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "One of the most low-maintenance plants",
+            "Excellent air purifier",
+            "Thrives on neglect - don't overwater"
+        ]
+    },
+    "peace_lily": {
+        "scientific_name": "Spathiphyllum",
+        "common_names": [
+            "Peace Lily"
+        ],
+        "light": "Low to medium indirect",
+        "water_frequency": "Weekly, keep soil consistently moist",
+        "humidity": "High",
+        "common_issues": [
+            "wilting",
+            "brown_tips",
+            "leaf_yellowing"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Droops dramatically when thirsty - great indicator",
+            "Will bloom in low light conditions",
+            "Wipe leaves to remove dust"
+        ]
+    },
+    "fiddle_leaf_fig": {
+        "scientific_name": "Ficus lyrata",
+        "common_names": [
+            "Fiddle Leaf Fig",
+            "FLF"
+        ],
+        "light": "Bright indirect",
+        "water_frequency": "Every 1-2 weeks",
+        "humidity": "Average to high",
+        "common_issues": [
+            "brown_spots",
+            "leaf_drop",
+            "root_rot"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Sensitive to changes - find a spot and don't move it",
+            "Rotate monthly for even growth",
+            "Clean leaves regularly for maximum photosynthesis"
+        ]
+    },
+    "spider_plant": {
+        "scientific_name": "Chlorophytum comosum",
+        "common_names": [
+            "Spider Plant",
+            "Airplane Plant"
+        ],
+        "light": "Bright indirect",
+        "water_frequency": "Weekly",
+        "humidity": "Average",
+        "common_issues": [
+            "brown_tips",
+            "pale_leaves"
+        ],
+        "toxic_to_pets": false,
+        "pro_tips": [
+            "Safe for pets!",
+            "Produces 'babies' that can be propagated",
+            "Sensitive to fluoride in tap water - use filtered"
+        ]
+    },
+    "rubber_plant": {
+        "scientific_name": "Ficus elastica",
+        "common_names": [
+            "Rubber Plant",
+            "Rubber Tree"
+        ],
+        "light": "Bright indirect",
+        "water_frequency": "Every 1-2 weeks",
+        "humidity": "Average",
+        "common_issues": [
+            "leaf_drop",
+            "leaf_yellowing",
+            "leggy_growth"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Wipe leaves with a damp cloth to keep them shiny",
+            "Can grow very tall indoors",
+            "Prune to control shape and encourage branching"
+        ]
+    },
+    "aloe_vera": {
+        "scientific_name": "Aloe barbadensis miller",
+        "common_names": [
+            "Aloe Vera",
+            "Medicinal Aloe"
+        ],
+        "light": "Bright direct to indirect",
+        "water_frequency": "Every 2-3 weeks",
+        "humidity": "Low",
+        "common_issues": [
+            "root_rot",
+            "brown_tips",
+            "soft_leaves"
+        ],
+        "toxic_to_pets": true,
+        "pro_tips": [
+            "Gel inside leaves has medicinal properties",
+            "Needs excellent drainage",
+            "Goes dormant in winter - water even less"
+        ]
+    },
+    "unknown": {
+        "scientific_name": "Unknown",
+        "common_names": [
+            "Unidentified Plant"
+        ],
+        "light": "Medium indirect (general recommendation)",
+        "water_frequency": "When top inch of soil is dry",
+        "humidity": "Average",
+        "common_issues": [],
+        "toxic_to_pets": null,
+        "pro_tips": [
+            "Observe the plant for a few days to understand its needs",
+            "Check soil moisture before watering",
+            "Start with indirect light and adjust based on response"
+        ]
+    }
+}

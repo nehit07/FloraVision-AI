@@ -1,0 +1,1 @@
+# FloraVision AI - Core Package

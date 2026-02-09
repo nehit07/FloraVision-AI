@@ -1,0 +1,23 @@
+# FloraVision AI Dependencies
+# Install: pip install -r requirements.txt
+
+# Core Framework
+langgraph>=0.2.0
+langchain-google-genai>=2.0.0
+
+# Web Interface
+streamlit>=1.40.0
+
+# Computer Vision
+ultralytics>=8.3.0
+pillow>=10.0.0
+
+# Data Validation
+pydantic>=2.0.0
+
+# Environment
+python-dotenv>=1.0.0
+
+# Development (optional)
+pytest>=8.0.0
+pytest-cov>=4.0.0

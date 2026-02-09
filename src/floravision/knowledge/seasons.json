@@ -1,0 +1,78 @@
+{
+    "spring": {
+        "description": "Growth season begins",
+        "watering_modifier": 1.0,
+        "fertilizing": true,
+        "repotting_recommended": true,
+        "general_advice": [
+            "Plants are waking up - increase watering gradually",
+            "Start fertilizing as new growth appears",
+            "Great time to repot root-bound plants"
+        ],
+        "warnings": [
+            "Watch for pest emergence",
+            "Avoid cold drafts from still-chilly nights"
+        ]
+    },
+    "summer": {
+        "description": "Peak growth season",
+        "watering_modifier": 1.3,
+        "fertilizing": true,
+        "repotting_recommended": true,
+        "general_advice": [
+            "Water more frequently due to heat",
+            "Move plants away from direct afternoon sun",
+            "Increase humidity for tropical plants"
+        ],
+        "warnings": [
+            "High risk of spider mites in hot, dry conditions",
+            "Avoid fertilizing during heat waves",
+            "Watch for signs of heat stress"
+        ]
+    },
+    "autumn": {
+        "description": "Growth slowing down",
+        "watering_modifier": 0.8,
+        "fertilizing": false,
+        "repotting_recommended": false,
+        "general_advice": [
+            "Reduce watering as days shorten",
+            "Stop fertilizing to let plants prepare for dormancy",
+            "Move plants away from cold windows"
+        ],
+        "warnings": [
+            "Avoid repotting - plants are slowing down",
+            "Watch for leaf drop as light decreases",
+            "Check for pests before bringing outdoor plants inside"
+        ]
+    },
+    "winter": {
+        "description": "Dormancy period",
+        "watering_modifier": 0.6,
+        "fertilizing": false,
+        "repotting_recommended": false,
+        "general_advice": [
+            "Water sparingly - most plants are dormant",
+            "Reduced growth is completely normal",
+            "Move plants to brighter spots if possible"
+        ],
+        "warnings": [
+            "Keep away from cold drafts and heating vents",
+            "Low humidity from heating can cause brown tips",
+            "Overwatering is especially dangerous in winter"
+        ]
+    },
+    "unknown": {
+        "description": "Season not specified",
+        "watering_modifier": 1.0,
+        "fertilizing": true,
+        "repotting_recommended": false,
+        "general_advice": [
+            "Check soil moisture before watering",
+            "Observe plant response to current conditions"
+        ],
+        "warnings": [
+            "Consider the current season when caring for your plant"
+        ]
+    }
+}
