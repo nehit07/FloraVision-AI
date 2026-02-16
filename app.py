@@ -34,6 +34,11 @@ import streamlit as st
 from datetime import datetime
 import io
 import os
+import sys
+
+# Ensure project root and src are in path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 # Import FloraVision components
 from src.floravision.graph import run_diagnosis, run_diagnosis_full
