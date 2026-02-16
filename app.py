@@ -37,17 +37,18 @@ import os
 import sys
 
 # Ensure project root and src are in path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+# Root is already in sys.path in most environments, but we prioritize 'src' to find 'floravision'
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 # Import FloraVision components
-from src.floravision.graph import run_diagnosis, run_diagnosis_full
-from src.floravision.nodes.seasonal import get_season_from_month
-from src.floravision.utils.pdf_report import generate_pdf_report, generate_batch_pdf_report
-from src.floravision.utils.visuals import draw_detections
-from src.floravision.utils.database import db_manager
-from src.floravision.utils.chat_manager import chat_manager
-from src.floravision.state import PlantState
+from floravision.graph import run_diagnosis, run_diagnosis_full
+from floravision.nodes.seasonal import get_season_from_month
+from floravision.utils.pdf_report import generate_pdf_report, generate_batch_pdf_report
+from floravision.utils.visuals import draw_detections
+from floravision.utils.database import db_manager
+from floravision.utils.chat_manager import chat_manager
+from floravision.state import PlantState
 import logging
 
 # Get logger
