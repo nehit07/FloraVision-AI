@@ -28,6 +28,8 @@ FALLBACK RULES:
 import json
 import base64
 import os
+import hashlib
+import random
 from pathlib import Path
 from typing import Tuple, Optional
 from dotenv import load_dotenv
@@ -97,18 +99,20 @@ class PlantIdentifier:
         """
         Mock identification for demo/development.
         
-        Returns a random known plant with varying confidence.
+        Returns a deterministic known plant based on image hash.
         """
-        import random
+        # Create a deterministic seed from image bytes
+        seed = int(hashlib.sha256(image_bytes).hexdigest(), 16) % (2**32)
+        rng = random.Random(seed)
         
         # 70% chance of recognizing a known plant
-        if random.random() < 0.7:
-            plant = random.choice([p for p in self.known_plants if p != "unknown"])
-            confidence = random.uniform(0.65, 0.95)
+        if rng.random() < 0.7:
+            plant = rng.choice([p for p in self.known_plants if p != "unknown"])
+            confidence = rng.uniform(0.65, 0.95)
             return plant, round(confidence, 2)
         else:
             # Return unknown with low confidence
-            return "unknown", round(random.uniform(0.3, 0.55), 2)
+            return "unknown", round(rng.uniform(0.3, 0.55), 2)
     
     def _real_identify(self, image_bytes: bytes) -> Tuple[str, float]:
         """

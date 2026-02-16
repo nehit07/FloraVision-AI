@@ -124,6 +124,17 @@ def _build_seasonal_insight(
     elif modifier > 1.2:
         insights.append("Your plant may need more frequent watering in this season.")
     
+    # ═══════════════════════════════════════════════════════════════
+    # CLIMATE-SPECIFIC ADJUSTMENTS
+    # ═══════════════════════════════════════════════════════════════
+    climate = state.climate_zone.lower()
+    if climate == "tropical":
+        insights.append("🌴 **Tropical Note**: Maintain high humidity and watch for fungal spread in the heat.")
+    elif climate == "arid":
+        insights.append("🌵 **Arid Note**: Water deeply and use mulch to keep roots cool. Guard against scorch.")
+    elif climate == "arctic":
+        insights.append("❄️ **Arctic Note**: Protect from drafts and secondary frost patterns from windows.")
+    
     return " ".join(insights)
 
 

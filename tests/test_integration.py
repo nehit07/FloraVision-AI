@@ -152,11 +152,11 @@ class TestRunDiagnosisFull:
             mock=True
         )
         
-        # Should be a dict with all state fields
-        assert "final_response" in result
-        assert "plant_name" in result
-        assert "severity" in result
-        assert "care_immediate" in result
+        # Should be a PlantState object
+        assert result.final_response is not None
+        assert result.plant_name is not None
+        assert result.severity is not None
+        assert len(result.care_immediate) > 0
     
     def test_mock_diagnosis_different_seasons(self, sample_image_bytes):
         """Test diagnosis works with different seasons."""
@@ -166,7 +166,7 @@ class TestRunDiagnosisFull:
                 season=season,
                 mock=True
             )
-            assert result["final_response"] is not None
+            assert result.final_response is not None
 
 
 # ═══════════════════════════════════════════════════════════════════

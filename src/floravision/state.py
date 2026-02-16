@@ -51,6 +51,7 @@ class YOLODetection(BaseModel):
     """
     label: str
     confidence: float = Field(ge=0.0, le=1.0)
+    box: Optional[List[float]] = None  # [x1, y1, x2, y2] normalized or pixel coordinates
 
 
 class PlantState(BaseModel):
@@ -71,6 +72,7 @@ class PlantState(BaseModel):
     image: Optional[bytes] = None
     
     season: str = "unknown"
+    climate_zone: str = "Temperate"
     plant_name: str = "Unknown"
     plant_id_confidence: float = 0.0
     
@@ -85,6 +87,7 @@ class PlantState(BaseModel):
     seasonal_insight: Optional[str] = None
     care_immediate: List[str] = Field(default_factory=list)
     care_ongoing: List[str] = Field(default_factory=list)
+    care_calendar: List[Dict[str, str]] = Field(default_factory=list)
     
     dont_do: List[str] = Field(default_factory=list)
     

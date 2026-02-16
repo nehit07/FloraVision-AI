@@ -260,7 +260,18 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
     for action in state.care_ongoing:
         care += f"- {action}\n"
     
-    sections.append(care.strip())
+    if state.care_calendar:
+        care += "\n\n### 📅 Weekly Schedule  \n\n" # Two spaces for hard break
+        care += "| Day | Task |\n"
+        care += "|---|---|\n"  # Simplified separator
+        for entry in state.care_calendar:
+            day = str(entry['day']).strip()
+            task = str(entry['task']).strip()
+            care += f"| {day} | {task} |\n"
+        care += "\n"
+    
+    # We use join later, so no need to strip here if it's causing issues
+    sections.append(care)
     
     # ═══════════════════════════════════════════════════════════════
     # SECTION 5: What Not To Do (Warnings)
@@ -309,8 +320,8 @@ def _build_response(state: PlantState, rescan_suggested: bool) -> str:
     # Add knowledge version footer
     version_footer = f"\n\n---\n\n*Diagnosis powered by FloraVision AI • Knowledge Base v{KNOWLEDGE_VERSION}*"
     
-    # Join all sections with dividers
-    return "\n\n---\n\n".join(sections) + version_footer
+    # Join all sections with dividers (using a unique break to avoid table conflicts)
+    return "\n\n===SECTION_BREAK===\n\n".join(sections) + version_footer
 
 
 def _get_health_status_text(state: PlantState) -> str:

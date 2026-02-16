@@ -26,6 +26,7 @@ NOTES:
 
 import json
 import random
+import hashlib
 from pathlib import Path
 from typing import List, Optional
 from PIL import Image
@@ -96,37 +97,44 @@ class YOLODetector:
         """
         Mock detection for demo/development.
         
-        Generates realistic-looking detections based on image analysis.
-        Uses image brightness/color to influence detections.
+        Generates deterministic detections based on image hash.
+        This ensures the same image always yields the same results.
         """
         detections = []
+        
+        # Create a deterministic seed from image bytes
+        seed = int(hashlib.sha256(image_bytes).hexdigest(), 16) % (2**32)
+        rng = random.Random(seed)
         
         # Analyze image to make mock more realistic
         try:
             image = Image.open(io.BytesIO(image_bytes))
             
-            # Simple heuristic: if image is very green, likely healthy
-            # If yellowing detected, add yellowing symptom
-            # This is just for demo - real YOLO would do proper detection
-            
-            # Random but realistic detections
-            num_detections = random.choices([0, 1, 2, 3], weights=[0.3, 0.35, 0.25, 0.1])[0]
+            # Random but deterministic detections
+            num_detections = rng.choices([0, 1, 2, 3], weights=[0.2, 0.4, 0.3, 0.1])[0]
             
             if num_detections == 0:
                 # Healthy plant - no symptoms
                 return []
             
-            # Select random symptoms
-            selected_symptoms = random.sample(
+            # Select deterministic symptoms
+            selected_symptoms = rng.sample(
                 self.valid_labels, 
                 min(num_detections, len(self.valid_labels))
             )
             
             for label in selected_symptoms:
-                confidence = random.uniform(0.55, 0.95)
+                confidence = rng.uniform(0.55, 0.95)
+                # Generate a mock box: [x1, y1, x2, y2]
+                x1 = rng.uniform(0.1, 0.6)
+                y1 = rng.uniform(0.1, 0.6)
+                x2 = x1 + rng.uniform(0.1, 0.3)
+                y2 = y1 + rng.uniform(0.1, 0.3)
+                
                 detections.append(YOLODetection(
                     label=label,
-                    confidence=round(confidence, 2)
+                    confidence=round(confidence, 2),
+                    box=[round(x1, 2), round(y1, 2), round(x2, 2), round(y2, 2)]
                 ))
         
         except Exception:
@@ -165,9 +173,13 @@ class YOLODetector:
                     
                     # Only include if label is in our symptom database
                     if label in self.valid_labels:
+                        # Extract coordinates (assuming xyxy format)
+                        x1, y1, x2, y2 = box.xyxyn[0].tolist()  # Normalized coordinates
+                        
                         detections.append(YOLODetection(
                             label=label,
-                            confidence=round(confidence, 2)
+                            confidence=round(confidence, 2),
+                            box=[round(x1, 3), round(y1, 3), round(x2, 3), round(y2, 3)]
                         ))
         
         except Exception as e:

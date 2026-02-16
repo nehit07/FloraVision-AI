@@ -44,6 +44,18 @@ USAGE:
 
 from langgraph.graph import StateGraph, END
 from .state import PlantState
+import logging
+import os
+
+# Configure standard logging
+log_dir = os.path.join(os.getcwd(), "logs")
+os.makedirs(log_dir, exist_ok=True)
+logging.basicConfig(
+    filename=os.path.join(log_dir, "flora.log"),
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("floravision")
 
 # Import all 8 reasoning nodes
 from .nodes.identification import identification_node
@@ -54,6 +66,7 @@ from .nodes.seasonal import seasonal_node
 from .nodes.care_plan import care_plan_node
 from .nodes.safety import safety_node
 from .nodes.formatter import formatter_node
+from .nodes.calendar import calendar_node
 
 # Import detection modules
 from .detection.yolo_detector import detect_symptoms
@@ -70,7 +83,8 @@ def create_graph() -> StateGraph:
     graph.add_node("seasonal", seasonal_node)               # Node 5
     graph.add_node("care_plan", care_plan_node)             # Node 6
     graph.add_node("safety", safety_node)                   # Node 7
-    graph.add_node("formatter", formatter_node)             # Node 8
+    graph.add_node("calendar", calendar_node)               # Node 8
+    graph.add_node("formatter", formatter_node)             # Node 9
     
     # Set entry point
     graph.set_entry_point("identification")
@@ -94,7 +108,8 @@ def create_graph() -> StateGraph:
     graph.add_edge("causes", "seasonal")
     graph.add_edge("seasonal", "care_plan")
     graph.add_edge("care_plan", "safety")
-    graph.add_edge("safety", "formatter")
+    graph.add_edge("safety", "calendar")
+    graph.add_edge("calendar", "formatter")
     
     # Set exit point
     graph.add_edge("formatter", END)
@@ -116,41 +131,53 @@ def get_compiled_graph():
 def run_diagnosis(
     image_bytes: bytes,
     season: str = "unknown",
+    climate_zone: str = "Temperate",
     mock: bool = True
 ) -> str:
+    logger.info(f"Starting diagnosis (mock={mock}, season={season})")
     yolo_detections = detect_symptoms(image_bytes, mock=mock)
     plant_name, plant_confidence = identify_plant(image_bytes, mock=mock)
     
     initial_state = PlantState(
         image=image_bytes,
         season=season.lower(),
+        climate_zone=climate_zone,
         plant_name=plant_name,
         plant_id_confidence=plant_confidence,
         yolo_detections=yolo_detections
     )
     
     compiled_graph = get_compiled_graph()
+    logger.debug("Invoking LangGraph...")
     final_state = compiled_graph.invoke(initial_state)
+    logger.info(f"Diagnosis complete: {plant_name} ({final_state['severity']})")
     return final_state["final_response"]
 
 
 def run_diagnosis_full(
     image_bytes: bytes,
     season: str = "unknown",
+    climate_zone: str = "Temperate",
     mock: bool = True
 ) -> PlantState:
-
+    logger.info(f"Starting full state diagnosis (mock={mock}, image_size={len(image_bytes)} bytes)")
+    
     yolo_detections = detect_symptoms(image_bytes, mock=mock)
     plant_name, plant_confidence = identify_plant(image_bytes, mock=mock)
     
     initial_state = PlantState(
         image=image_bytes,
         season=season.lower(),
+        climate_zone=climate_zone,
         plant_name=plant_name,
         plant_id_confidence=plant_confidence,
         yolo_detections=yolo_detections
     )
     
     compiled_graph = get_compiled_graph()
+    logger.debug(f"Executing graph for {plant_name}...")
     result = compiled_graph.invoke(initial_state)
-    return PlantState(**result)
+    
+    final_state = PlantState(**result)
+    logger.info(f"Full diagnosis done: {plant_name} - Health: {final_state.is_healthy}")
+    return final_state

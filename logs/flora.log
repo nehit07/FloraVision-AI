@@ -1,0 +1,2 @@
+2026-02-13 16:14:22.139 | INFO     | src.floravision.graph:run_diagnosis:133 - Starting diagnosis (mock=True, season=unknown)
+2026-02-13 16:14:25.977 | INFO     | src.floravision.graph:run_diagnosis:149 - Diagnosis complete: aloe_vera (Mild)
